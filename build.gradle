@@ -74,7 +74,7 @@ jenkinsPlugin {
     coreVersion = '2.77'
 
     // short name of the plugin, defaults to the project name without trailing '-plugin'
-    shortName = 'checkmarx'
+    shortName = 'checkmarx_hackaton'
 
     // human-readable name of plugin
     displayName = 'Jenkins Checkmarx Plugin'
