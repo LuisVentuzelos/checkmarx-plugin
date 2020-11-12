@@ -47,18 +47,13 @@ import org.jetbrains.annotations.Nullable;
 import org.kohsuke.stapler.*;
 
 import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1036,6 +1031,331 @@ public class CxScanBuilder extends Builder implements SimpleBuildStep {
         String reportName = null;
         try {
             String reportHTML = SummaryUtils.generateSummary(results.getSastResults(), results.getOsaResults(), results.getScaResults(), config);
+            List<String> log = Readfile("C:\\Users\\Administrator\\Desktop\\Logs\\20201110T234653-11_a7c48c9c-7618-46f6-b3a4-89cc72b95213.log");
+
+            CxResultsInfo resultsInfo = new CxResultsInfo(log);
+            resultsInfo.generateResults();
+
+            // Update HTML with resultsInfo vars
+            // For example: replace TotalFiles with resultsInfo.getTotalFiles()
+            // (...)
+
+            String reportLogHTML = "" +
+                    "\n" +
+                    "<style>\n" +
+                    "    \n" +
+                    "    .cx-report .results-report .chart .bar-4{\n" +
+                    "        position: relative;\n" +
+                    "        background-color: #00cc00;\n" +
+                    "    }\n" +
+                    "    .cx-report .results-report .chart .bar-5{\n" +
+                    "        position: relative;\n" +
+                    "        background-color: #ffff00;\n" +
+                    "    }\n" +
+                    "    .cx-report .results-report .chart .bar-6 {\n" +
+                    "        position: relative;\n" +
+                    "        background-color: #ff0000;\n" +
+                    "    }\n" +
+                    "</style>" +
+                    "<head>\n" +
+                    "    <script src=\"https://kit.fontawesome.com/a076d05399.js\"></script>\n" +
+                    "</head>\n" +
+                    "<div id=\"cx-report\" class=\"cx-report\">\n" +
+                    "    <div class=\"report-title\">\n" +
+                    "        <div class=\"cx-report-title\">Checkmarx Log Report</div>\n" +
+                    "<div id=\"results-report\" class=\"results-report\">\n" +
+                    "        <div class=\"summary-section\">\n" +
+                    "            <div id=\"summary-results\" class=\"summary-results\">\n" +
+                    "                <div class=\"sast-summary chart-large\" id=\"sast-summary\">\n" +
+                    "                    <div class=\"summary-report-title sast\">\n" +
+                    "                        <div class=\"summary-title-text sast\">CxSAST Risk Gauge</div>\n" +
+                    "                            <div id=\"sast-title-links\" class=\"title-links\">\n" +
+                    "                            </div>\n" +
+                    "                    </div>\n" +
+                    "                    <div id=\"chart_div\" style=\"width: 400px; height: 120px;\" ></div>\n" +
+                    "            </div>\n" +
+                    "        </div>" +
+                    "</div>" +
+
+                    "    <div id=\"results-report\" class=\"results-report\">\n" +
+                    "\n" +
+                    "        <div class=\"summary-section\">\n" +
+                    "            <div id=\"summary-results\" class=\"summary-results\">\n" +
+                    "\n" +
+                    "                <div class=\"sast-summary chart-large\" id=\"sast-summary\">\n" +
+                    "                    <div class=\"summary-report-title sast\">\n" +
+                    "                        <div class=\"summary-title-text sast\">CxSAST Log Status</div>\n" +
+                    "                            <div id=\"sast-title-links\" class=\"title-links\">\n" +
+                    "                            </div>\n" +
+                    "                    </div>\n" +
+                    "                        <!--sast-chart-->\n" +
+                    "                        <div class=\"summary-chart\" id=\"sast-results\">\n" +
+                    "                            <div class=\"top-of-chart\">\n" +
+                    "                            </div>\n" +
+                    "\n" +
+                    "                            <ul class=\"chart\">\n" +
+                    "                                <!--sast-high-->\n" +
+                    "                                <li>\n" +
+                    "                                        <span class=\"bar-4\" id=\"bar-high\" style=\"height: 214.2px\">\n" +
+                    "                                            <div id=\"tooltip-high\">\n" +
+                    "                                            </div>\n" +
+                    "                                            <div id=\"high-new-scans\" class=\"new-scans\"\n" +
+                    "                                                 style=\"height: 0px\"></div>\n" +
+                    "                                            <div id=\"high-recurrent-scans\" \n" +
+                    "                                                 style=\"height: 214.2px\"></div>\n" +
+                    "                                        </span>\n" +
+                    "\n" +
+                    "                                    <div class=\"bar-title-wrapper\">\n" +
+                    "                                        <div class=\"bar-title-container\">\n" +
+                    "                                            <div class=\"bar-title\"><i class=\"fas fa-file-code\"></i> Files -</div>\n" +
+                    "                                            <div class=\"bar-count\" id=\"bar-count-high\" >" + resultsInfo.getTotalFiles() +"</div> <!--VALUE-->\n" +
+                    "                                        </div>\n" +
+                    "                                    </div>\n" +
+                    "                                </li>\n" +
+                    "\n" +
+                    "                                <!--sast-medium-->\n" +
+                    "                                <li>\n" +
+                    "                                        <span class=\"bar-5\" id=\"bar-med\" style=\"height: 142.8px\">\n" +
+                    "                                                <div id=\"tooltip-med\">\n" +
+                    "                                                </div>\n" +
+                    "                                                <div id=\"med-new-scans\" class=\"new-scans\"\n" +
+                    "                                                     style=\"height: 0px\"></div>\n" +
+                    "                                                <div id=\"med-recurrent-scans\" \n" +
+                    "                                                     style=\"height: 142.8px\"></div>\n" +
+                    "                                        </span>\n" +
+                    "                                    <div class=\"bar-title-wrapper\">\n" +
+                    "                                        <div class=\"bar-title-container\">\n" +
+                    "                                            <div class=\"bar-title\"><i class=\"fas fa-object-group\"></i> DOM -</div>\n" +
+                    "                                            <div class=\"bar-count\" id=\"bar-count-med\">" + resultsInfo.getNumberOfDomObjects() +"</div> <!--VALUE-->\n" +
+                    "                                        </div>\n" +
+                    "                                    </div>\n" +
+                    "                                </li>\n" +
+                    "\n" +
+                    "                                <!--sast-low-->\n" +
+                    "                                <li>\n" +
+                    "                                        <span class=\"bar-6\" id=\"bar-low\" style=\"height: 142.8px\">\n" +
+                    "                                            <div id=\"tooltip-low\">\n" +
+                    "                                            </div>\n" +
+                    "                                            <div id=\"low-new-scans\" class=\"new-scans\"\n" +
+                    "                                                 style=\"height: 0px\"></div>\n" +
+                    "                                            <div id=\"low-recurrent-scans\" \n" +
+                    "                                                 style=\"height: 142.8px\"></div>\n" +
+                    "                                        </span>\n" +
+                    "                                    <div class=\"bar-title-wrapper\">\n" +
+                    "                                        <div class=\"bar-title-container\">\n" +
+                    "                                            <div class=\"bar-title\"><i class=\"fas fa-bug\"></i> Exceptions -</div>\n" +
+                    "                                            <div class=\"bar-count\" id=\"bar-count-low\"></div> <!--VALUE-->\n" +
+                    "                                        </div>\n" +
+                    "                                    </div>\n" +
+                    "                                </li>\n" +
+                    "                            </ul>\n" +
+                    "                        </div>\n" +
+                    "                </div>\n" +
+                    "\n" +
+                    "    </div>\n" +
+                    "</div>\n" +
+                    "\n" +
+                    "\n" +
+                    "            <div id=\"sast-full\" class=\"sast-full full-results-section\">\n" +
+                    "                <div class=\"summary-table-row cxsast-full\">\n" +
+                    "                    <div class=\"title-column\">\n" +
+                    "                        <div class=\"summary-title\">\n" +
+                    "                            <div class=\"sum1\">CxSAST</div>\n" +
+                    "                            <div class=\"sum1\">Log Analysis</div>\n" +
+                    "                        </div>\n" +
+                    "                        <div class=\"detailed-report\">\n" +
+                    "                            <div class=\"full-downloads sast-downloads\">\n" +
+                    "                                <div class=\"report-link link-to-result\">\n" +
+                    "                                    <a href=\"http://2020hackaton/CxWebClient/ViewerMain.aspx?scanId=1000005&ProjectID=3\" class=\"pdf-report\" id=\"sast-code-viewer-link\"\n" +
+                    "                                       target=\"_top\">\n" +
+                    "                                    </a>\n" +
+                    "                                </div>\n" +
+                    "                            </div>\n" +
+                    "                        </div>\n" +
+                    "                    </div>\n" +
+                    "                    <div class=\"main-column\">\n" +
+                    "                        <div class=\"full-start-end\">\n" +
+                    "                            <div class=\"full-start\">\n" +
+                    "                                <div class=\"full-start-end-text-date\">\n" +
+                    "                                    <div class=\"full-start-end-text\">\n" +
+                    "                                        <i class=\"far fa-clock\"></i> Scan Time:\n" +
+                    "                                    </div>\n" +
+                    "                                    <div class=\"full-start-end-date\"\n" +
+                    "                                         id=\"sast-full-start-date\">" + resultsInfo.getScanDurationPercentage() +"</div>   <!--VALUE-->\n" +
+                    "                                </div>\n" +
+                    "                            </div>\n" +
+                    "\n" +
+                    "                            <!--sast-full-end-->\n" +
+                    "                            <div class=\"full-end\">\n" +
+                    "                                <div class=\"full-start-end-text-date\">\n" +
+                    "                                    <div class=\"full-start-end-text\">\n" +
+                    "                                        <i class=\"fas fa-tachometer-alt\"></i> Scan Coverage:\n" +
+                    "                                    </div>\n" +
+                    "                                    <div class=\"full-start-end-date\" id=\"sast-full-end-date\">" + resultsInfo.getScanCoverage() +"</div><!--VALUE-->\n" +
+                    "                                </div>\n" +
+                    "                            </div>\n" +
+                    "\n" +
+                    "                            <!--sast-full-files-->\n" +
+                    "                            <div class=\"full-files\">\n" +
+                    "                                <div class=\"full-start-end-text-date\">\n" +
+                    "                                    <div class=\"full-start-end-text\">\n" +
+                    "                                        <i class=\"far fa-object-group\"></i> DOM Objects:\n" +
+                    "                                    </div>\n" +
+                    "                                    <div class=\"full-start-end-date\" id=\"sast-full-files\">17</div>\n" +
+                    "                                </div>\n" +
+                    "                            </div>\n" +
+                    "\n" +
+                    "                        </div>\n" +
+                    "\n" +
+                    "                            <div id=\"sast-cve-table-high-container\">\n" +
+                    "                                <div class=\"full-severity-title\">\n" +
+                    "                                    <div class=\"severity-title-name\"><i class=\"far fa-file-code\"></i> Files</i>\n" +
+                    "                                        </div>\n" +
+                    "                                </div>\n" +
+                    "                                <table id=\"sast-cve-table-high\" class=\"cve-table sast-cve-table sast-cve-table-high\">\n" +
+                    "                                    <tr>\n" +
+                    "                                        <th>Types</th>\n" +
+                    "                                        <th>##</th>\n" +
+                    "                                    </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Total Files</td>\n" +
+                    "                                                <td>" + resultsInfo.getTotalFiles() +"</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t<tr>\n" +
+                    "                                                <td>Good Files</td>\n" +
+                    "                                                <td>" + resultsInfo.getGoodFiles() +"</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Partially Good Files</td>\n" +
+                    "                                                <td>" + resultsInfo.getGoodFiles() +"</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Bad Files</td>\n" +
+                    "                                                <td>" + resultsInfo.getBadFiles() +"</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                </table>\n" +
+                    "                            </div>\n" +
+                    "\n" +
+                    "                            <div id=\"sast-cve-table-medium-container\">\n" +
+                    "                                <div class=\"full-severity-title\">\n" +
+                    "                                    <div class=\"severity-title-name\"><i class=\"fas fa-code\"></i> Lines of Code</div>\n" +
+                    "                                </div>\n" +
+                    "                                <table id=\"sast-cve-table-medium\"\n" +
+                    "                                       class=\"cve-table sast-cve-table sast-cve-table-medium\">\n" +
+                    "                                    <tr>\n" +
+                    "                                        <th>Types</th>\n" +
+                    "                                        <th>##</th>\n" +
+                    "                                    </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Total LOC</td>\n" +
+                    "                                                <td>" + resultsInfo.getParsedLoc() +"</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Good LOC</td>\n" +
+                    "                                                <td>" + resultsInfo.getGoodLoc() +"</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Bad LOC</td>\n" +
+                    "                                                <td>" + resultsInfo.getBadLoc() +"</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                </table>\n" +
+                    "                            </div>\n" +
+                    "\n" +
+                    "                            <div id=\"sast-cve-table-low-container\">\n" +
+                    "                                <div class=\"full-severity-title\">\n" +
+                    "                                    <div class=\"severity-title-name\"><i class=\"fas fa-sticky-note\"></i> Messages</div>\n" +
+                    "                                </div>\n" +
+                    "                                <table id=\"sast-cve-table-low\" class=\"cve-table sast-cve-table sast-cve-table-low\">\n" +
+                    "                                    <tr>\n" +
+                    "                                        <th>Types</th>\n" +
+                    "                                        <th>##</th>\n" +
+                    "                                    </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Exceptions</td>\n" +
+                    "                                                <td>1</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Antlr Exceptions</td>\n" +
+                    "                                                <td>1</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Error</td>\n" +
+                    "                                                <td>1</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Debug</td>\n" +
+                    "                                                <td>1</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Info</td>\n" +
+                    "                                                <td>1</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                </table>\n" +
+                    "                            </div>\n" +
+                    "\n" +
+                    "                            <div id=\"sast-cve-table-low-container\">\n" +
+                    "                                <div class=\"full-severity-title\">\n" +
+                    "                                    <div class=\"severity-title-name\"><i class=\"fas fa-save\"></i> Memory</div>\n" +
+                    "                                </div>\n" +
+                    "                                <table id=\"sast-cve-table-low\" class=\"cve-table sast-cve-table sast-cve-table-low\">\n" +
+                    "                                    <tr>\n" +
+                    "                                        <th>Types</th>\n" +
+                    "                                        <th>##</th>\n" +
+                    "                                    </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Max Memory</td>\n" +
+                    "                                                <td>1</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "                                            <tr>\n" +
+                    "                                                <td>Average Memory</td>\n" +
+                    "                                                <td>1</td><!--VALUE-->\n" +
+                    "                                            </tr>\n" +
+                    "\n" +
+                    "                                </table>\n" +
+                    "                            </div>\n" +
+                    "                    </div>\n" +
+                    "                </div>\n" +
+                    "            </div>\n" +
+                    "\n" +
+                    "\n" +
+                    "    </div>\n" +
+                    "</div>\n" +
+                    "\n    " +
+                    "<script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>\n" +
+                    "   <script type=\"text/javascript\">\n" +
+                    "      google.charts.load('current', {'packages':['gauge']});\n" +
+                    "      google.charts.setOnLoadCallback(drawChart);\n" +
+                    "\n" +
+                    "      function drawChart() {\n" +
+                    "\n        " +
+                    "       var data = google.visualization.arrayToDataTable([\n" +
+                    "          ['Label', 'Value'],\n" +
+                    "          ['Risk', 80],//VALUE\n" +
+                    "          ['Memory', 55],//VALUE\n" +
+                    "          ['Queries', 68],//VALUE\n" +
+                    "          ['Exceptions', 45],//VALUE\n" +
+                    "          ['LOC', 12],//VALUE\n" +
+                    "          ['Files', 25]//VALUE\n" +
+                    "        ]);\n" +
+                    "\n" +
+                    "        var options = {\n" +
+                    "          width: 700, height: 120,\n" +
+                    "          redFrom: 90, redTo: 100,\n" +
+                    "          yellowFrom:75, yellowTo: 90,\n" +
+                    "          minorTicks: 5\n" +
+                    "        };" +
+                    "        var chart = new google.visualization.Gauge(document.getElementById('chart_div'));\n" +
+                    "\n" +
+                    "        chart.draw(data, options);\n" +
+                    "      }\n" +
+                    "    </script>" +
+
+                    "</body>\n" +
+                    "</html>";
+
+            reportHTML = reportHTML + "\n" + reportLogHTML;
+
+
             reportName = CxScanResult.resolveHTMLReportName(config.isSastEnabled(), getDependencyScannerType(config));
             File reportFile = new File(checkmarxBuildDir, reportName);
             FileUtils.writeStringToFile(reportFile, reportHTML, Charset.defaultCharset());
@@ -1044,6 +1364,94 @@ public class CxScanBuilder extends Builder implements SimpleBuildStep {
             log.error("Failed to generate HTML report.", e);
         }
         return reportName;
+    }
+
+
+    public static List<String> Readfile(String filePath) throws FileNotFoundException {
+        List<String> lines = new ArrayList<>();
+        File file = new File(filePath);
+
+        if (file.exists())
+        {
+
+            Scanner reader = new Scanner(file);
+            while (reader.hasNextLine()){
+
+                String line = reader.nextLine();
+                lines.add(line);
+
+            }
+
+            reader.close();
+            return lines;
+        }
+
+        else
+        {
+            throw new FileNotFoundException("Cannot");
+        }
+    }
+
+
+    public static String GetDOMStatistics(List<String> log, DOMStatiscs type)
+    {
+        String pattern;
+        String value;
+
+        switch (type)
+        {
+            case TotalFiles:
+                pattern = "Total files\\s*(?<number>(\\d*))";
+                break;
+            case GoodFiles:
+                pattern = "Good files:\\s*(?<number>(\\d*))";
+                break;
+            case BadFiles:
+                pattern = "Bad files:\\s*(?<number>(\\d*))";
+                break;
+            case GoodLOC:
+                pattern = "Good LOC:\\s*(?<number>(\\d*))";
+                break;
+            case BadLOC:
+                pattern = "Bad LOC:\\s*(?<number>(\\d*))";
+                break;
+            case ScanCoverage:
+                pattern = "Scan coverage:\\s*(?<number>(\\d.*))";
+                break;
+            default:
+                pattern = "";
+                break;
+        }
+
+
+        if (pattern != null && !pattern.isEmpty())
+        {
+            for (String line: log)
+            {
+
+                Pattern p = Pattern.compile(pattern);//. represents single character
+                Matcher m = p.matcher(line);
+                boolean b = m.matches();
+
+                if (b) {
+
+                    value = m.group(1);
+                    return value;
+                }
+            }
+        }
+        return "";
+
+    }
+
+    public enum DOMStatiscs
+    {
+        TotalFiles,
+        GoodFiles,
+        BadFiles,
+        GoodLOC,
+        BadLOC,
+        ScanCoverage
     }
 
     private void writeJsonObjectToFile(Object jsonObj, File to, String description) {
